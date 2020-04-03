@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, View, Text, Image, TextInput, TouchableOpacity, AsyncStorage, BackHandler, ToastAndroid } from 'react-native';
+import { Router, View, Text, Image, TextInput, TouchableOpacity, BackHandler, ToastAndroid, AsyncStorage } from 'react-native';
 import { Icon } from '@ant-design/react-native';
 import { Actions } from 'react-native-router-flux';
 import { myFetch } from '../utils'
@@ -10,7 +10,7 @@ export default class Login extends Component {
         this.state = {
             username: '',
             pwd: '',
-            isLoading: false
+            isLoad: false
         }
     }
     userhandle = (text) => {
@@ -19,31 +19,38 @@ export default class Login extends Component {
     pwdhandle = (text) => {
         this.setState({ pwd: text })
     }
-
-
-    login = () => {
+    enroll = () => {
         this.setState({
-            isLoading: true
+            isLoad: true
         })
-        // myFetch.get('topic',{limit:4,user:'sss'})
-        myFetch.post('/login', {
+
+        myFetch.post('/enroll', {
             username: this.state.username,
             pwd: this.state.pwd
-        }).then(res => {
-            console.log(res)
-            //根据返回状态进行判断,正确时跳转首页
-            AsyncStorage.setItem('user', JSON.stringify(res.data))
-                .then(() => {
-                    this.setState({
-                        isLoading: false
-                    })
-                    Actions.homePage();
-                })
         })
+            .then(res => {
+                if (res.data.token == '' && res.data.pwd == '') {
+                    ToastAndroid.show('用户名或密码不能为空！', ToastAndroid.SHORT)
+                }
+                else {
+                    if (res.data.token == '0') {
+                        AsyncStorage.setItem('newuser', JSON.stringify(res.data))
+                            .then(() => {
+                                this.setState({
+                                    isLoad: false
+                                })
+                                ToastAndroid.show(res.data.word, ToastAndroid.SHORT)
+                                Actions.login()
+                            })
+                    }
+                    else if (res.data.token == '1') {
+                        ToastAndroid.show(res.data.word, ToastAndroid.SHORT)
+                    }
+                }
+            })
     }
     render() {
         return (
-            
             <View style={{ flex: 1, justifyContent: 'center' }}
             >
                 <View style={{ alignItems: 'center' }}>
@@ -68,7 +75,6 @@ export default class Login extends Component {
                         borderBottomWidth: 1,
                         flexDirection: 'row',
                         alignItems: 'center',
-                        //borderRadius: 20,
                         paddingLeft: 20
                     }}>
                         <Icon name='user' color='red' />
@@ -86,8 +92,8 @@ export default class Login extends Component {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
-                        onPress={this.login}>
-                        <Text>登录</Text>
+                        onPress={this.enroll}>
+                        <Text>注册</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{
@@ -98,12 +104,12 @@ export default class Login extends Component {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
-                        onPress={()=>Actions.enroll()}>
-                        <Text>注册</Text>
+                        onPress={() => Actions.login()}>
+                        <Text>返回登录页</Text>
                     </TouchableOpacity>
                 </View>
                 {
-                    this.state.isLoading ? <View><Text>正在登录...</Text></View> : null
+                    this.state.isLoad ? ToastAndroid.show('正在注册', ToastAndroid.SHORT) : null
                 }
             </View>
         );

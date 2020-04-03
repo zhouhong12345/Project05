@@ -1,18 +1,15 @@
 import React, { Component } from 'react'
 import { Text, View, Image, StyleSheet, AsyncStorage, TouchableOpacity } from 'react-native'
-import Swiper from 'react-native-swiper'
-import Button from 'react-native-button'
 
 export default class SwiperPage extends Component {
     start = () => {
         AsyncStorage.setItem('isFirstInstall','true',()=>{
+            console.log('a')
             this.props.afterInstall();
         });
     }
     render() {
-
         return (
-            <Swiper style={styles.wrapper} showsButtons={false}>
                 <View style={styles.slide1}>
                     <Image
                         style={styles.img}
@@ -22,19 +19,6 @@ export default class SwiperPage extends Component {
                         <Text style={{ color: '#fff' }}>开始体验</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.slide2}>
-                    <Image
-                        style={styles.img}
-                        source={require('../../assets/slide.png')}
-                    />
-                </View>
-                <View style={styles.slide3} >
-                    <Image
-                        style={styles.img}
-                        source={require('../../assets/slide.png')}
-                    />
-                </View>
-            </Swiper>
         )
     }
 }

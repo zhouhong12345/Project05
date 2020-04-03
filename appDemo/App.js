@@ -4,16 +4,22 @@ import { View, Text, StyleSheet, Image, BackHandler, ToastAndroid, AsyncStorage 
 import { Router, Overlay, Scene, Tabs, Drawer, Lightbox, Modal, Actions } from 'react-native-router-flux';
 import { Icon } from '@ant-design/react-native';
 import SplashScreen from 'react-native-splash-screen';
-// import Home from './src/home/Home';
-// import Goods from './src/goods/Goods';
-// import Userinfor from './src/userinfor/Userinfor';
+import Home from './src/home/Home';
+import Goods from './src/goods/Goods';
+import Userinfor from './src/userinfor/Userinfor';
+
+import servea from './src/servea/servea';
+// import gooda from './src/gooda/gooda';
+// import mea from './src/mea/mea';
+
 import Login from './src/common/Login';
 import SwiperPage from './src/common/SwiperPage';
 
-
-// import Serve from './Project05/serve/Serve';
-import Good from './Project05/good/Good';
-import Me from './Project05/me/Me';
+import Short from './src/short/Short';
+import Middle from './src/middle/Middle';
+import High from './src/high/High';
+import Another from './src/another/Another';
+import Enroll from './src/common/Enroll';
 
 console.disableYellowBox = true;
 
@@ -32,37 +38,34 @@ const App = () => {
     let [isLogin, setLogin] = useState(false)
     let [isFirstInstall, setFirstInstall] = useState(true)
     let now = 0;
-    let init = ()=>{
-		AsyncStorage.getItem('isInstall')
-		.then(res=>{
-			console.log('isinstall',res)
-			if(res){
-				setInstall(false);
-			}
-		})
-		AsyncStorage.getItem('user')
-		.then(res=>{
-			let user = JSON.parse(res)
-			console.log(user)
-			if(!user){
-				SplashScreen.hide();
-			}
-			if(user&&user.token){
-				setLogin(true);
-				SplashScreen.hide();
-			}
-		})
-	}
-	useEffect(()=>{
-		init();
-	},[])
-    
-    let afterInstall=()=>{
+    useEffect(() => {
+        //AsyncStorage.removeItem('isFirstInstall')
+        AsyncStorage.getItem('isFirstInstall')
+            .then(res => {
+                if (res) {
+                    setFirstInstall(false);
+                }
+            })
+       // AsyncStorage.removeItem('user')
+        AsyncStorage.getItem('user')
+            .then(res => {
+                let user = JSON.parse(res)
+                if (!user) {
+                    SplashScreen.hide();
+                }
+                if (user && user.token) {
+                    setLogin(true);
+                    Actions.homePage()
+                    SplashScreen.hide();
+                }
+            })
+    }, [])
+    let afterInstall = () => {
         setFirstInstall(false)
     }
     if (isFirstInstall) {
         return <View style={{ flex: 1 }}>
-            <SwiperPage afterInstall={afterInstall}/>
+            <SwiperPage afterInstall={afterInstall} />
         </View>
     }
     return (
@@ -80,12 +83,10 @@ const App = () => {
                         return true;
                     }
                 }
-
             }}
         >
             <Overlay>
                 <Modal key='lightbox' hideNavBar>
-
                     <Lightbox key='lightbox'>
                         <Drawer
                             key='drawer'
@@ -93,6 +94,7 @@ const App = () => {
                             drawerIcon={() => <Icon name='menu' />}
                             drawerWidth={400}
                         >
+                            <Scene key='enroll' hideNavBar component={Enroll} />
                             <Scene key='root'>
                                 <Tabs
                                     key='tabbar'
@@ -103,50 +105,41 @@ const App = () => {
                                 >
                                     {/* 主页栏 */}
                                     <Scene key='homePage'
-                                        title='首页'
-                                        //   icon={() => <Image 
-                                        //               style={{width:30,height:30}}
-                                        //               source={require('./assets/icon/user.png')} />}
+                                        title='第一tab页'
                                         icon={({ focused }) => <Icon
                                             color={focused ? 'red' : 'blue'}
                                             name='home' />}
-                                    component={Serve}
+                                    // component={Short}
                                     >
-                                        {/* <Scene key='home' component={serve} /> */}
+                                        <Scene key='home' component={Short} />
+                                        <Scene key='another' component={Another} />
 
                                     </Scene>
                                     {/* 商品分类*/}
                                     <Scene key='goodsPage'
-                                        title='商品分类'
-                                        //   icon={() => <Image 
-                                        //               style={{width:30,height:30}}
-                                        //               source={require('./assets/icon/user.png')} />}
+                                        title='第二tab页'
                                         icon={({ focused }) => <Icon
                                             color={focused ? 'red' : 'blue'}
                                             name='file' />}
                                     >
-                                        <Scene key='goods' component={Good} />
+                                        <Scene key='goods' component={Middle} />
                                     </Scene>
                                     {/* 用户中心 */}
                                     <Scene key='userPage'
                                         icon={({ focused }) => <Icon color={focused ? 'red' : 'blue'} name='file' />}
-                                        title='个人中心'
-                                        component={Me}
+                                        title='第三tab页'
+                                        component={High}
                                     />
                                 </Tabs>
                             </Scene>
                         </Drawer>
-                        {/* <Scene key='light' component={Mybox} /> */}
                     </Lightbox>
                     <Scene key='login' initial={!isLogin} component={Login} />
-                    {/* <Scene key='login' component={ShowMyName} />
-                    <Scene key='login1' component={Login} /> */}
-
                 </Modal>
-                {/* <Scene component={Message} /> */}
-
             </Overlay>
         </Router>
     );
 };
 export default App;
+
+
