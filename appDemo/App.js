@@ -70,11 +70,14 @@ const App = () => {
     }
     return (
         <Router
-            backAndroidHandler={() => {
-                if (Actions.currentScene != 'home') {
+             backAndroidHandler={() => {
+               // console.log(Actions.currentScene )
+                if (Actions.currentScene != 'home' && Actions.currentScene != 'login') {
+                    console.log('abb')
                     Actions.pop();
                     return true;
-                } else {
+                } else if(Actions.currentScene == 'login' || Actions.currentScene == 'home') {
+                    console.log('a')
                     if (new Date().getTime() - now < 2000) {
                         BackHandler.exitApp();
                     } else {
